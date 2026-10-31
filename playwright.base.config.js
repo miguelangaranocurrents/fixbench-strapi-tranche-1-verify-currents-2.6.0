@@ -104,18 +104,9 @@ const createConfig = ({ port, testDir, appDir, reportFileName, domain }) => {
 
       /* Default time each action such as `click()` can take */
       actionTimeout: getEnvNum(process.env.PLAYWRIGHT_ACTION_TIMEOUT, 10 * 1000),
-      // Keep a trace and a screenshot of every failed attempt
-      trace: 'retain-on-failure',
-      screenshot: 'only-on-failure',
-      video: getEnvBool(process.env.PLAYWRIGHT_VIDEO, false)
-        ? {
-            mode: 'on-first-retry', // Only save videos when retrying a test
-            size: {
-              width: 1280,
-              height: 720,
-            },
-          }
-        : 'off',
+      trace: 'on',
+      video: 'on',
+      screenshot: 'on',
 
       /* Use the storage state with localStorage set globally */
       storageState: './tests/e2e/playwright-storage-state.json',
