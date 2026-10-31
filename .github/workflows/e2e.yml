@@ -31,6 +31,8 @@ jobs:
         env:
           STRAPI_E2E_EDITION: ce
           STRAPI_FEATURES_UNSTABLE_PREVIEW_SIDE_EDITOR: true
+          CURRENTS_RECORD_KEY: ${{ secrets.CURRENTS_RECORD_KEY }}
+          CURRENTS_PROJECT_ID: ${{ secrets.CURRENTS_PROJECT_ID }}
         run: |
           status=0
           yarn test:e2e --setup --concurrency=1 --domains content-manager -- --project=chromium || status=1
@@ -80,4 +82,12 @@ jobs:
         with:
           name: test-results
           path: test-results.json
+          retention-days: 30
+
+      - name: Upload Currents report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: currents
+          path: currents-report-*.json
           retention-days: 30

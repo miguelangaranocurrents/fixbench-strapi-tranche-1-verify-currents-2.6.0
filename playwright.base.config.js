@@ -2,6 +2,8 @@
 const path = require('path');
 const { devices } = require('@playwright/test');
 const { parseType } = require('@strapi/utils');
+const { currentsReporter } = require('@currents/playwright');
+const currentsConfig = require('./currents.config');
 
 const getEnvNum = (envVar, defaultValue) => {
   if (envVar !== undefined && envVar !== null) {
@@ -93,6 +95,18 @@ const createConfig = ({ port, testDir, appDir, reportFileName, domain }) => {
         },
       ],
       ['json', { outputFile: path.join(__dirname, `test-results-${domain}.json`) }],
+      ...(process.env.CURRENTS_RECORD_KEY
+        ? [
+            currentsReporter({
+              ...currentsConfig,
+              // One Currents run and one summary per domain (each is its own Playwright run)
+              ciBuildId: process.env.GITHUB_RUN_ID
+                ? `${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}-${domain}`
+                : undefined,
+              outputFile: path.join(__dirname, `currents-report-${domain}.json`),
+            }),
+          ]
+        : []),
     ],
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
